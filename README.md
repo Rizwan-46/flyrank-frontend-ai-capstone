@@ -1,16 +1,32 @@
-# React + Vite
+## FlyRank AI Capstone: Pet Care Management
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the Phase 1 pure JavaScript Next.js application for our Pet Care Management platform, developed as part of the FlyRank Frontend Engineering Capstone.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* **Framework:** Next.js (App Router)
+* **Language:** JavaScript (Pure JS, stripped of TypeScript)
+* **Styling:** Tailwind CSS
 
-## React Compiler
+## 🛠️ Project Setup & Git Recovery Log
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This project underwent a complex repository migration to preserve the official capstone tracking history while safely integrating a locally built Next.js codebase.
 
-## Expanding the ESLint configuration
+**Key milestones achieved:**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Git History Preservation:** Successfully force-rewound the remote repository to the official template commit (`1a10d07`) to save the required `AGENTS.md`, `CLAUDE.md`, and `WORKFLOW.md` timelines.
+* **Merge Conflict Resolution:** Resolved critical Netlify build crashes and `EJSONPARSE` errors in `package.json` caused by stray Git conflict markers (`<<<<<<< HEAD`).
+* **Codebase Migration:** Manually ported the pure JavaScript local development files into the official tracked directory without overwriting the hidden `.git` folder.
+* **TypeScript Purge:** Safely deleted all auto-generated Next.js TypeScript configurations (`tsconfig.json`, `next.config.ts`, `next-env.d.ts`) and `.tsx` file duplicates to enforce a strict JavaScript environment.
+
+## 💻 Getting Started
+
+To run the development server locally:
+
+```bash
+npm install
+npm run dev
+
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
