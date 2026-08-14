@@ -9,14 +9,18 @@ export function ThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  // Ensure the component is mounted on the client to prevent hydration mismatch
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" disabled>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        aria-disabled="true" 
+        className="pointer-events-none opacity-50"
+      >
         <span className="sr-only">Toggle theme loading</span>
       </Button>
     );

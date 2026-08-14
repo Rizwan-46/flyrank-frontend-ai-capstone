@@ -18,7 +18,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
-const initialForm = { email: "", password: "" };
+const initialForm = { email: "james@example.com", password: "Password123" };
 
 export default function LoginPage() {
   const router = useRouter();
