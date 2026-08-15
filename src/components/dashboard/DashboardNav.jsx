@@ -31,13 +31,13 @@ export default function DashboardNav() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
 
-        <div className="flex items-center gap-8">
+        <div className="flex min-w-0 items-center gap-8">
           <Logo href="/dashboard" />
 
-          {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-1 md:flex">
+          {/* Desktop Navigation — only from lg up, so tablets don't overflow */}
+          <nav className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
@@ -45,7 +45,7 @@ export default function DashboardNav() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${isActive
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                     }`}
@@ -59,11 +59,11 @@ export default function DashboardNav() {
         </div>
 
         {/* Right Side Controls (Desktop & Mobile) */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <ThemeToggle />
 
-          <div className="hidden items-center gap-4 md:flex">
-            <span className="text-sm font-medium text-muted-foreground">
+          <div className="hidden items-center gap-3 lg:flex">
+            <span className="max-w-[10rem] truncate text-sm font-medium text-muted-foreground">
               {currentUser?.name}
             </span>
             <Button variant="outline" size="sm" onClick={logout} className="gap-2">
@@ -72,10 +72,10 @@ export default function DashboardNav() {
             </Button>
           </div>
 
-          {/* Mobile Navigation Toggle */}
+          {/* Mobile / Tablet Navigation Toggle — now covers up to lg */}
           <Sheet>
             <SheetTrigger
-              render={<Button variant="ghost" size="icon" className="md:hidden" />}
+              render={<Button variant="ghost" size="icon" className="lg:hidden" />}
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
