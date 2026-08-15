@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { usePetStore } from "@/store/petStore";
@@ -22,7 +22,7 @@ import { parseDateOnly } from "@/utils/dateUtils";
 const ALL_PETS_VALUE = "all";
 const ALL_VETS_VALUE = "all_vets";
 
-export default function MedicalHistorySection({ petId = null }) {
+export default function MedicalHistorySection({ petId = null, highlightId = null }) {
   const currentUser = useAuthStore((state) => state.currentUser);
   const allPets = usePetStore((state) => state.pets);
   const allRecords = useMedicalRecordStore((state) => state.medicalRecords);
@@ -69,9 +69,11 @@ export default function MedicalHistorySection({ petId = null }) {
   }, [scopedRecords]);
 
   const records = useMemo(() => {
+    if (petId) return scopedRecords;
+
     let filtered = scopedRecords;
 
-    if (!petId && petFilter !== ALL_PETS_VALUE) {
+    if (petFilter !== ALL_PETS_VALUE) {
       filtered = filtered.filter((r) => r.petId === petFilter);
     }
 
@@ -86,7 +88,6 @@ export default function MedicalHistorySection({ petId = null }) {
         return (
           r.reason.toLowerCase().includes(query) ||
           r.diagnosis.toLowerCase().includes(query) ||
-          r.treatment.toLowerCase().includes(query) ||
           r.veterinarian.toLowerCase().includes(query) ||
           petName.toLowerCase().includes(query)
         );
@@ -95,6 +96,16 @@ export default function MedicalHistorySection({ petId = null }) {
 
     return filtered;
   }, [scopedRecords, petId, petFilter, vetFilter, search, petsById]);
+
+  // Deep-link support: scroll to and briefly highlight the record
+  // referenced by ?highlight= from a Dashboard click.
+  useEffect(() => {
+    if (!highlightId) return;
+    const el = document.getElementById(`medical-record-${highlightId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [highlightId, records]);
 
   function handleAddClick() {
     setEditingRecord(null);
@@ -152,28 +163,25 @@ export default function MedicalHistorySection({ petId = null }) {
         </Button>
       </div>
 
-      {/* Filters Row */}
-      {scopedRecords.length > 0 && (
+      {!petId && scopedRecords.length > 0 && (
         <div className="flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center" data-testid="medical-filters">
           <div className="flex-1 min-w-[200px]">
             <MedicalRecordSearchBar value={search} onChange={setSearch} />
           </div>
           
-          {!petId && (
-            <Select value={petFilter} onValueChange={setPetFilter}>
-              <SelectTrigger className="w-full sm:w-48 bg-card shadow-sm" aria-label="Filter by pet" data-testid="pet-filter">
-                <SelectValue placeholder="Filter by pet" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL_PETS_VALUE}>All pets</SelectItem>
-                {ownPets.map((pet) => (
-                  <SelectItem key={pet.id} value={pet.id}>
-                    {pet.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+          <Select value={petFilter} onValueChange={setPetFilter}>
+            <SelectTrigger className="w-full sm:w-48 bg-card shadow-sm" aria-label="Filter by pet" data-testid="pet-filter">
+              <SelectValue placeholder="Filter by pet" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_PETS_VALUE}>All pets</SelectItem>
+              {ownPets.map((pet) => (
+                <SelectItem key={pet.id} value={pet.id}>
+                  {pet.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           {uniqueVets.length > 0 && (
             <Select value={vetFilter} onValueChange={setVetFilter}>
@@ -198,6 +206,7 @@ export default function MedicalHistorySection({ petId = null }) {
           records={records}
           petsById={petsById}
           showPetName={!petId}
+          highlightId={highlightId}
           emptyTitle={hasActiveFilters ? "No records found" : undefined}
           emptyDescription={
             hasActiveFilters

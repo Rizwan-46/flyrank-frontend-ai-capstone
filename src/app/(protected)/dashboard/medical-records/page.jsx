@@ -1,8 +1,13 @@
+// src/app/(protected)/dashboard/medical-records/page.jsx
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import MedicalHistorySection from "@/components/medical/MedicalHistorySection";
 
 export default function MedicalRecordsPage() {
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
   return (
     <div className="space-y-6">
       <div>
@@ -14,7 +19,7 @@ export default function MedicalRecordsPage() {
         </p>
       </div>
 
-      <MedicalHistorySection />
+      <MedicalHistorySection highlightId={highlightId} />
     </div>
   );
 }

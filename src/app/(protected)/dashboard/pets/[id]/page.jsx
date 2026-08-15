@@ -148,7 +148,7 @@ export default function PetProfilePage() {
         </TabsContent>
 
         <TabsContent value="medical" className="mt-4">
-          <MedicalHistorySection petId={pet.id} />
+          <MedicalHistorySection petId={pet.id} highlightId={highlightId} />
         </TabsContent>
 
 

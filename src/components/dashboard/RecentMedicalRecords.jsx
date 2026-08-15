@@ -25,7 +25,7 @@ export default function RecentMedicalRecords({ records, petsById }) {
             {records.map((record) => (
               <li key={record.id}>
                 <Link
-                  href={`/dashboard/pets/${record.petId}`}
+                  href={`/dashboard/pets/${record.petId}?tab=medical&highlight=${record.id}`}
                   className="flex items-center justify-between gap-4 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <div className="min-w-0">
