@@ -14,6 +14,7 @@ import PetFormDialog from "@/components/pets/PetFormDialog";
 import DeletePetDialog from "@/components/pets/DeletePetDialog";
 import MedicalHistorySection from "@/components/medical/MedicalHistorySection";
 import VaccinationsSection from "@/components/vaccinations/VaccinationsSection";
+import AppointmentsSection from "@/components/appointments/AppointmentsSection";
 import { formatDate } from "@/utils/dateUtils";
 
 export default function PetProfilePage() {
@@ -146,13 +147,8 @@ export default function PetProfilePage() {
         <TabsContent value="vaccinations" className="mt-4">
           <VaccinationsSection petId={pet.id} />
         </TabsContent>
-
         <TabsContent value="appointments" className="mt-4">
-          <PlaceholderPanel
-            title="appointment"
-            count={relatedCounts.appointments}
-            note="Full appointment management is coming in a later phase."
-          />
+          <AppointmentsSection petId={pet.id} />
         </TabsContent>
       </Tabs>
 

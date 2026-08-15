@@ -1,10 +1,20 @@
-export default function Page() {
+"use client";
+
+import AppointmentsSection from "@/components/appointments/AppointmentsSection";
+
+export default function AppointmentsPage() {
   return (
-    <div className="flex items-center justify-center min-h-[50vh]">
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 text-center">
-        <h1 className="text-2xl font-bold text-slate-800">Appointments</h1>
-        <p className="text-slate-500 mt-2">This view is currently under construction.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Appointments
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          View and manage appointments across all your pets.
+        </p>
       </div>
+
+      <AppointmentsSection />
     </div>
   );
 }
