@@ -10,6 +10,9 @@ import { VACCINATION_STATUS } from "@/utils/statusColors";
 
 export default function VaccinationListItem({
   vaccination,
+  petName,
+  showPetName = false,
+  highlighted = false,
   onEdit,
   onDelete,
   onComplete,
@@ -18,9 +21,14 @@ export default function VaccinationListItem({
   const isCompleted = status === VACCINATION_STATUS.COMPLETED;
 
   return (
-    <div 
-      className="group rounded-3xl border border-border/50 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-md sm:p-7"
+    <div
+      id={`vaccination-${vaccination.id}`}
       data-testid={`vaccination-item-${vaccination.id}`}
+      className={`group scroll-mt-24 rounded-3xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md sm:p-7 ${
+        highlighted
+          ? "border-primary ring-2 ring-primary/40"
+          : "border-border/50 hover:border-primary/30"
+      }`}
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
@@ -40,6 +48,7 @@ export default function VaccinationListItem({
           </div>
           <p className="mt-1.5 text-sm font-medium text-muted-foreground">
             {getVaccinationReminderLabel(vaccination)}
+            {showPetName && petName ? ` · ${petName}` : ""}
           </p>
         </div>
 

@@ -10,7 +10,7 @@ export default function VaccinationRow({ vaccination, petName }) {
 
   return (
     <Link
-      href={`/dashboard/pets/${vaccination.petId}`}
+      href={`/dashboard/pets/${vaccination.petId}?tab=vaccinations&highlight=${vaccination.id}`}
       className="flex items-center justify-between gap-4 rounded-lg px-3 py-2.5 transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="min-w-0">

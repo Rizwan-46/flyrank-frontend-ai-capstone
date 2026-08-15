@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   LayoutDashboard,
   PawPrint,
+  Syringe,
   CalendarCheck,
   FileText,
   Menu,
@@ -19,6 +20,7 @@ import {
  const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Pets", href: "/dashboard/pets", icon: PawPrint },
+  { name: "Vaccinations", href: "/dashboard/vaccinations", icon: Syringe },
   { name: "Appointments", href: "/dashboard/appointments", icon: CalendarCheck },
   { name: "Records", href: "/dashboard/medical-records", icon: FileText },
 ];

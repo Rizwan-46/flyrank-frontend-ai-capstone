@@ -1,10 +1,24 @@
-export default function Page() {
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import VaccinationsSection from "@/components/vaccinations/VaccinationsSection";
+
+export default function VaccinationsPage() {
+  const searchParams = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
   return (
-    <div className="flex items-center justify-center min-h-[50vh]">
-      <div className="bg-white p-8 rounded-lg shadow-sm border border-slate-200 text-center">
-        <h1 className="text-2xl font-bold text-slate-800">Vaccination</h1>
-        <p className="text-slate-500 mt-2">This view is currently under construction.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Vaccinations
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Track and manage vaccinations across all your pets.
+        </p>
       </div>
+
+      <VaccinationsSection highlightId={highlightId} />
     </div>
   );
 }

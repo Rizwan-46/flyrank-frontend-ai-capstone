@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
 import { usePetStore } from "@/store/petStore";
@@ -24,6 +25,12 @@ export default function PetProfilePage() {
   const pets = usePetStore((state) => state.pets);
   const updatePet = usePetStore((state) => state.updatePet);
   const deletePet = usePetStore((state) => state.deletePet);
+
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") ?? "overview";
+  const highlightId = searchParams.get("highlight");
+  const [activeTab, setActiveTab] = useState(initialTab);
+
 
   const vaccinations = useVaccinationStore((state) => state.vaccinations);
   const medicalRecords = useMedicalRecordStore((state) => state.medicalRecords);
@@ -107,7 +114,8 @@ export default function PetProfilePage() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview">
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full justify-start overflow-x-auto sm:w-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="medical">Medical History</TabsTrigger>
@@ -145,7 +153,7 @@ export default function PetProfilePage() {
 
 
         <TabsContent value="vaccinations" className="mt-4">
-          <VaccinationsSection petId={pet.id} />
+          <VaccinationsSection petId={pet.id} highlightId={highlightId} />
         </TabsContent>
         <TabsContent value="appointments" className="mt-4">
           <AppointmentsSection petId={pet.id} />
