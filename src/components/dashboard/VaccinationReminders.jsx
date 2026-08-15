@@ -4,15 +4,20 @@ import VaccinationRow from "./VaccinationRow";
 
 export default function VaccinationReminders({ items, petsById }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <h2 className="text-base font-semibold text-foreground">
-        Vaccination Reminders
-      </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Upcoming and due-today vaccinations.
-      </p>
+    <section 
+      className="flex flex-col rounded-3xl border border-border/50 bg-card p-6 shadow-sm sm:p-8"
+      data-testid="vaccination-reminders-widget"
+    >
+      <header>
+        <h2 className="text-lg font-bold tracking-tight text-foreground">
+          Vaccination Reminders
+        </h2>
+        <p className="mt-1 text-sm font-medium text-muted-foreground">
+          Upcoming and due-today vaccinations.
+        </p>
+      </header>
 
-      <div className="mt-4">
+      <div className="mt-6 flex-1">
         {items.length === 0 ? (
           <EmptyState
             icon={Syringe}
@@ -20,17 +25,18 @@ export default function VaccinationReminders({ items, petsById }) {
             description="You're all caught up for now."
           />
         ) : (
-          <div className="divide-y divide-border">
+          <ul className="space-y-2">
             {items.map((v) => (
-              <VaccinationRow
-                key={v.id}
-                vaccination={v}
-                petName={petsById[v.petId]?.name ?? "Unknown pet"}
-              />
+              <li key={v.id}>
+                <VaccinationRow
+                  vaccination={v}
+                  petName={petsById[v.petId]?.name ?? "Unknown pet"}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
-    </div>
+    </section>
   );
 }
