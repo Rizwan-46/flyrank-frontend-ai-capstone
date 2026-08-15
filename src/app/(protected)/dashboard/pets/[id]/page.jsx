@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import PetFormDialog from "@/components/pets/PetFormDialog";
 import DeletePetDialog from "@/components/pets/DeletePetDialog";
+import MedicalHistorySection from "@/components/medical/MedicalHistorySection";
 import { formatDate } from "@/utils/dateUtils";
 
 export default function PetProfilePage() {
@@ -36,10 +37,10 @@ export default function PetProfilePage() {
 
   const relatedCounts = pet
     ? {
-        vaccinations: vaccinations.filter((v) => v.petId === pet.id).length,
-        medicalRecords: medicalRecords.filter((r) => r.petId === pet.id).length,
-        appointments: appointments.filter((a) => a.petId === pet.id).length,
-      }
+      vaccinations: vaccinations.filter((v) => v.petId === pet.id).length,
+      medicalRecords: medicalRecords.filter((r) => r.petId === pet.id).length,
+      appointments: appointments.filter((a) => a.petId === pet.id).length,
+    }
     : { vaccinations: 0, medicalRecords: 0, appointments: 0 };
 
   if (!pet) {
@@ -137,12 +138,9 @@ export default function PetProfilePage() {
         </TabsContent>
 
         <TabsContent value="medical" className="mt-4">
-          <PlaceholderPanel
-            title="medical history"
-            count={relatedCounts.medicalRecords}
-            note="Full medical record management is coming in a later phase."
-          />
+          <MedicalHistorySection petId={pet.id} />
         </TabsContent>
+
 
         <TabsContent value="vaccinations" className="mt-4">
           <PlaceholderPanel

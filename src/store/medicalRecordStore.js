@@ -9,6 +9,32 @@ export const useMedicalRecordStore = create(
       hasHydrated: false,
       setHasHydrated: (value) => set({ hasHydrated: value }),
 
+      addMedicalRecord: (petId, recordData) => {
+        const newRecord = {
+          id: `record-${Date.now()}`,
+          petId,
+          ...recordData,
+        };
+        set((state) => ({
+          medicalRecords: [...state.medicalRecords, newRecord],
+        }));
+        return newRecord;
+      },
+
+      updateMedicalRecord: (recordId, updates) => {
+        set((state) => ({
+          medicalRecords: state.medicalRecords.map((r) =>
+            r.id === recordId ? { ...r, ...updates } : r
+          ),
+        }));
+      },
+
+      deleteMedicalRecord: (recordId) => {
+        set((state) => ({
+          medicalRecords: state.medicalRecords.filter((r) => r.id !== recordId),
+        }));
+      },
+
       removeByPetId: (petId) => {
         set((state) => ({
           medicalRecords: state.medicalRecords.filter((r) => r.petId !== petId),

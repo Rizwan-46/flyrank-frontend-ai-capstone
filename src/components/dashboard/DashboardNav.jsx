@@ -16,13 +16,11 @@ import {
   LogOut
 } from "lucide-react";
 
-const navItems = [
+ const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Pets", href: "/dashboard/pets", icon: PawPrint },
   { name: "Appointments", href: "/dashboard/appointments", icon: CalendarCheck },
-  { name: "Records", href: "/dashboard/records", icon: FileText },
 ];
-
 export default function DashboardNav() {
   const pathname = usePathname();
   const currentUser = useAuthStore((state) => state.currentUser);
