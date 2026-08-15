@@ -16,6 +16,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const NOTES_MAX = 2000;
 
@@ -32,10 +39,15 @@ export default function MedicalRecordFormDialog({
   open,
   onOpenChange,
   record,
+  pets = [],
+  lockedPetId = null,
+  selectedPetId,
+  onPetChange,
   onSubmit,
 }) {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
+  const [petError, setPetError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditMode = Boolean(record);
@@ -55,6 +67,7 @@ export default function MedicalRecordFormDialog({
       setFormData(emptyForm);
     }
     setErrors({});
+    setPetError("");
   }, [open, record]);
 
   function handleChange(e) {
@@ -65,6 +78,11 @@ export default function MedicalRecordFormDialog({
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (!lockedPetId && !selectedPetId) {
+      setPetError("Please select a pet.");
+      return;
+    }
 
     const result = medicalRecordSchema.safeParse(formData);
     if (!result.success) {
@@ -101,6 +119,29 @@ export default function MedicalRecordFormDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-6 pt-4" data-testid="medical-record-form">
+          {!lockedPetId && !isEditMode && (
+            <div className="space-y-2">
+              <Label htmlFor="petId" className="text-sm font-medium text-foreground/90">
+                Pet <span className="text-destructive">*</span>
+              </Label>
+              <Select value={selectedPetId ?? ""} onValueChange={onPetChange}>
+                <SelectTrigger id="petId" aria-invalid={!!petError} className="bg-background shadow-sm" data-testid="select-pet">
+                  <SelectValue placeholder="Select a pet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {pets.map((pet) => (
+                    <SelectItem key={pet.id} value={pet.id}>
+                      {pet.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {petError && (
+                <p className="text-xs font-medium text-destructive">{petError}</p>
+              )}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="date" className="text-sm font-medium text-foreground/90">
@@ -167,7 +208,7 @@ export default function MedicalRecordFormDialog({
             <Input
               id="diagnosis"
               name="diagnosis"
-              placeholder="e.g. Healthy, Flea Allergy Dermatitis"
+              placeholder="e.g. Healthy, Mild dermatitis"
               value={formData.diagnosis}
               onChange={handleChange}
               aria-invalid={!!errors.diagnosis}
@@ -186,7 +227,7 @@ export default function MedicalRecordFormDialog({
             <Input
               id="treatment"
               name="treatment"
-              placeholder="e.g. Annual vaccines, prescribed antibiotics"
+              placeholder="e.g. None, Prescribed topical cream"
               value={formData.treatment}
               onChange={handleChange}
               aria-invalid={!!errors.treatment}
@@ -218,7 +259,7 @@ export default function MedicalRecordFormDialog({
               id="notes"
               name="notes"
               rows={4}
-              placeholder="Any additional information or follow-up instructions..."
+              placeholder="Any additional information..."
               value={formData.notes}
               onChange={handleChange}
               aria-invalid={!!errors.notes}

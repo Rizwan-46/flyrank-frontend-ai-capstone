@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle"; // Adjust path if needed
+import { ThemeToggle } from "./ThemeToggle"; 
 import Logo from "@/components/shared/Logo";
 import { useAuthStore } from "@/store/authStore";
 
@@ -46,12 +46,22 @@ export default function Navbar() {
                 <span className="opacity-0">Wait</span> 
               </Button>
             ) : isAuthenticated ? (
-              <Button asChild variant="default" size="sm" data-testid="nav-dashboard-btn">
-                <Link href="/dashboard">Dashboard</Link>
+              <Button
+                variant="default"
+                size="sm"
+                data-testid="nav-dashboard-btn"
+                render={<Link href="/dashboard" />}
+              >
+                Dashboard
               </Button>
             ) : (
-              <Button asChild variant="secondary" size="sm" data-testid="nav-login-btn">
-                <Link href="/login">Login</Link>
+              <Button
+                variant="secondary"
+                size="sm"
+                data-testid="nav-login-btn"
+                render={<Link href="/login" />}
+              >
+                Login
               </Button>
             )}
           </div>

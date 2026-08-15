@@ -3,14 +3,24 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/dateUtils";
 import EmptyState from "@/components/dashboard/EmptyState";
 
-export default function MedicalTimeline({ records, onEdit, onDelete }) {
+export default function MedicalTimeline({
+  records,
+  petsById = {},
+  showPetName = false,
+  emptyTitle,
+  emptyDescription,
+  onEdit,
+  onDelete,
+}) {
   if (records.length === 0) {
     return (
       <div data-testid="empty-medical-records">
         <EmptyState
           icon={Stethoscope}
-          title="No medical records yet"
-          description="Add a record to start building this pet's medical history."
+          title={emptyTitle ?? "No medical records yet"}
+          description={
+            emptyDescription ?? "Add a record to start building this history."
+          }
         />
       </div>
     );
@@ -21,7 +31,6 @@ export default function MedicalTimeline({ records, onEdit, onDelete }) {
       {records.map((record) => (
         <li key={record.id} className="relative group" data-testid={`timeline-item-${record.id}`}>
           
-          {/* Timeline Dot */}
           <span
             aria-hidden="true"
             className="absolute -left-[2.1rem] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-background bg-primary ring-4 ring-background transition-transform group-hover:scale-125 sm:-left-[2.6rem]"
@@ -32,13 +41,15 @@ export default function MedicalTimeline({ records, onEdit, onDelete }) {
               <div className="min-w-0">
                 <time className="text-xs font-semibold uppercase tracking-wider text-primary">
                   {formatDate(record.date)}
+                  {showPetName && petsById[record.petId] && (
+                    <span className="text-muted-foreground"> · {petsById[record.petId].name}</span>
+                  )}
                 </time>
                 <h3 className="mt-1.5 text-xl font-bold text-foreground">
                   {record.reason}
                 </h3>
               </div>
               
-              {/* Actions (Hidden on desktop until hover for a cleaner UI) */}
               <div className="flex shrink-0 gap-2 opacity-100 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
                 <Button 
                   variant="secondary" 

@@ -20,6 +20,7 @@ import {
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Pets", href: "/dashboard/pets", icon: PawPrint },
   { name: "Appointments", href: "/dashboard/appointments", icon: CalendarCheck },
+  { name: "Records", href: "/dashboard/medical-records", icon: FileText },
 ];
 export default function DashboardNav() {
   const pathname = usePathname();
