@@ -28,7 +28,7 @@ export default function Hero() {
             organized and easy to track — so nothing important ever slips
             through the cracks.
           </p>
-          
+
           <div className="mt-8 flex flex-wrap gap-4">
             {!hasHydrated ? (
               <div className="flex gap-4">
@@ -40,16 +40,29 @@ export default function Hero() {
                 </Button>
               </div>
             ) : isAuthenticated ? (
-              <Button asChild size="lg" data-testid="hero-dashboard-btn">
-                <Link href="/dashboard">Go to Dashboard</Link>
+              <Button
+                size="lg"
+                data-testid="hero-dashboard-btn"
+                render={<Link href="/dashboard" />}
+              >
+                Go to Dashboard
               </Button>
             ) : (
               <>
-                <Button asChild size="lg" data-testid="hero-signup-btn">
-                  <Link href="/signup">Get Started Free</Link>
+                <Button
+                  size="lg"
+                  data-testid="hero-signup-btn"
+                  render={<Link href="/signup" />}
+                >
+                  Get Started Free
                 </Button>
-                <Button asChild size="lg" variant="outline" data-testid="hero-login-btn">
-                  <Link href="/login">Log In</Link>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  data-testid="hero-login-btn"
+                  render={<Link href="/login" />}
+                >
+                  Log In
                 </Button>
               </>
             )}

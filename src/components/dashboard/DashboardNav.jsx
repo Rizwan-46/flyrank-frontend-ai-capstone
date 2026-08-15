@@ -7,13 +7,13 @@ import { ThemeToggle } from "../shared/ThemeToggle";
 import Logo from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { 
-  LayoutDashboard, 
-  PawPrint, 
-  CalendarCheck, 
-  FileText, 
-  Menu, 
-  LogOut 
+import {
+  LayoutDashboard,
+  PawPrint,
+  CalendarCheck,
+  FileText,
+  Menu,
+  LogOut
 } from "lucide-react";
 
 const navItems = [
@@ -31,10 +31,10 @@ export default function DashboardNav() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        
+
         <div className="flex items-center gap-8">
           <Logo href="/dashboard" />
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => {
@@ -44,11 +44,10 @@ export default function DashboardNav() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive 
-                      ? "bg-primary/10 text-primary" 
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+                      ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   {item.name}
@@ -61,7 +60,7 @@ export default function DashboardNav() {
         {/* Right Side Controls (Desktop & Mobile) */}
         <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
-          
+
           <div className="hidden items-center gap-4 md:flex">
             <span className="text-sm font-medium text-muted-foreground">
               {currentUser?.name}
@@ -74,18 +73,18 @@ export default function DashboardNav() {
 
           {/* Mobile Navigation Toggle */}
           <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
+            <SheetTrigger
+              render={<Button variant="ghost" size="icon" className="md:hidden" />}
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle menu</span>
             </SheetTrigger>
             <SheetContent side="right" className="w-64 sm:max-w-sm">
               <div className="flex flex-col h-full">
                 <div className="py-6">
                   <Logo href="/dashboard" showText={true} />
                 </div>
-                
+
                 <nav className="flex-1 space-y-2">
                   {navItems.map((item) => {
                     const isActive = pathname === item.href;
@@ -94,11 +93,10 @@ export default function DashboardNav() {
                       <Link
                         key={item.name}
                         href={item.href}
-                        className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                          isActive 
-                            ? "bg-primary/10 text-primary" 
+                        className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${isActive
+                            ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                        }`}
+                          }`}
                       >
                         <Icon className="h-5 w-5" />
                         {item.name}
@@ -109,7 +107,7 @@ export default function DashboardNav() {
 
                 <div className="border-t border-border pt-6 pb-2">
                   <div className="mb-4 px-3 text-sm font-medium text-muted-foreground">
-                    Logged in as <br/>
+                    Logged in as <br />
                     <span className="text-foreground">{currentUser?.name}</span>
                   </div>
                   <Button variant="outline" className="w-full justify-start gap-2" onClick={logout}>
@@ -121,7 +119,7 @@ export default function DashboardNav() {
             </SheetContent>
           </Sheet>
         </div>
-        
+
       </div>
     </header>
   );
