@@ -8,6 +8,7 @@ import { usePetStore } from "@/store/petStore";
 import { useVaccinationStore } from "@/store/vaccinationStore";
 import { useMedicalRecordStore } from "@/store/medicalRecordStore";
 import { useAppointmentStore } from "@/store/appointmentStore";
+import { useChatStore } from "@/store/chatStore";
 import { buildPetContext } from "@/lib/ai/buildPetContext";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
@@ -16,9 +17,10 @@ import JumpToLatest from "./JumpToLatest";
 import ChatEmptyState from "./ChatEmptyState";
 
 const SCROLL_THRESHOLD_PX = 80;
+const EMPTY_ARRAY = [];
 
 export default function ChatInterface() {
-  const { messages, sendMessage, status, stop } = useChat({
+  const { messages, sendMessage, status, stop, setMessages } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
@@ -27,6 +29,12 @@ export default function ChatInterface() {
   const vaccinations = useVaccinationStore((s) => s.vaccinations);
   const medicalRecords = useMedicalRecordStore((s) => s.medicalRecords);
   const appointments = useAppointmentStore((s) => s.appointments);
+
+  const chatHasHydrated = useChatStore((s) => s.hasHydrated);
+  const setStoredMessages = useChatStore((s) => s.setMessages);
+  const storedMessages = useChatStore(
+    (s) => s.messagesByUser[currentUser?.id] || EMPTY_ARRAY
+  );
 
   const petsById = useMemo(() => {
     const own = pets.filter((p) => p.userId === currentUser?.id);
@@ -38,9 +46,29 @@ export default function ChatInterface() {
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const scrollRef = useRef(null);
   const bottomRef = useRef(null);
+  const restoredForUserRef = useRef(null);
 
   const isGenerating = status === "submitted" || status === "streaming";
   const showThinking = status === "submitted";
+
+  // Restore this user's saved conversation once localStorage has
+  // hydrated. Re-runs if the logged-in user changes mid-session.
+  useEffect(() => {
+    if (!chatHasHydrated || !currentUser) return;
+    if (restoredForUserRef.current === currentUser.id) return;
+
+    setMessages(storedMessages.length > 0 ? storedMessages : []);
+    restoredForUserRef.current = currentUser.id;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatHasHydrated, currentUser?.id]);
+
+  // Persist every change so navigating to another dashboard page and
+  // back — or refreshing the browser — doesn't lose the conversation.
+  useEffect(() => {
+    if (!chatHasHydrated || !currentUser) return;
+    if (restoredForUserRef.current !== currentUser.id) return;
+    setStoredMessages(currentUser.id, messages);
+  }, [messages, chatHasHydrated, currentUser, setStoredMessages]);
 
   function scrollToBottom(behavior = "smooth") {
     bottomRef.current?.scrollIntoView({ behavior, block: "end" });
@@ -83,9 +111,6 @@ export default function ChatInterface() {
     scrollToBottom("smooth");
   }
 
-  // ChatInput submits via a form event now, not raw text — this bridges
-  // that back to handleSend, which still works fine for the empty-state
-  // example prompts (those call handleSend directly with a string).
   function handleFormSubmit(e) {
     e.preventDefault();
     handleSend(input);

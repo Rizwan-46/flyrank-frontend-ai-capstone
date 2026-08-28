@@ -5,10 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function ChatInput({ value = "", onChange, onSubmit, onStop, isGenerating }) {
+
+  function handleFormSubmit(e) {
+  e.preventDefault();
+  console.log("submit fired, onSubmit is:", typeof onSubmit);
+  if (typeof onSubmit === "function") {
+    onSubmit(e);
+  }
+}
+
   function handleKeyDown(e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSubmit(e);
+      if (typeof onSubmit === "function") {
+        onSubmit(e);
+      }
     }
   }
 
@@ -17,7 +28,7 @@ export default function ChatInput({ value = "", onChange, onSubmit, onStop, isGe
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleFormSubmit}
       className="relative flex w-full items-end gap-2 rounded-3xl border border-border bg-card p-2 shadow-sm focus-within:ring-1 focus-within:ring-ring transition-shadow"
     >
       <Textarea
