@@ -10,7 +10,7 @@ const googleProvider = createGoogleGenerativeAI({
 // Model is overridable via env so it can be swapped without a code change
 // when Google retires a model (see .env.example for current status).
 export const chatModel = googleProvider(
-  process.env.GEMINI_MODEL || "gemini-2.5-flash"
+  process.env.GEMINI_MODEL || "gemini-3.6-flash"
 );
 
 export const SYSTEM_PROMPT = `You are the Pet Care AI Assistant, built into the PetCare App.

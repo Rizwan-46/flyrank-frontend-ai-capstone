@@ -16,6 +16,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const emptyForm = {
   name: "",
@@ -29,10 +36,15 @@ export default function VaccinationFormDialog({
   open,
   onOpenChange,
   vaccination,
+  pets = [],
+  lockedPetId = null,
+  selectedPetId,
+  onPetChange,
   onSubmit,
 }) {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
+  const [petError, setPetError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEditMode = Boolean(vaccination);
@@ -51,6 +63,7 @@ export default function VaccinationFormDialog({
       setFormData(emptyForm);
     }
     setErrors({});
+    setPetError("");
   }, [open, vaccination]);
 
   function handleChange(e) {
@@ -61,6 +74,11 @@ export default function VaccinationFormDialog({
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (!lockedPetId && !selectedPetId) {
+      setPetError("Please select a pet.");
+      return;
+    }
 
     const result = vaccinationSchema.safeParse(formData);
     if (!result.success) {
@@ -76,7 +94,7 @@ export default function VaccinationFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
+      <DialogContent
         className="max-h-[90vh] overflow-y-auto p-6 sm:max-w-[600px] sm:p-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         data-testid="vaccination-form-dialog"
       >
@@ -97,6 +115,29 @@ export default function VaccinationFormDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-6 pt-4" data-testid="vaccination-form">
+          {!lockedPetId && !isEditMode && (
+            <div className="space-y-2">
+              <Label htmlFor="petId" className="text-sm font-medium text-foreground/90">
+                Pet <span className="text-destructive">*</span>
+              </Label>
+              <Select value={selectedPetId ?? ""} onValueChange={onPetChange}>
+                <SelectTrigger id="petId" className="bg-background shadow-sm" aria-invalid={!!petError}>
+                  <SelectValue placeholder="Select a pet" />
+                </SelectTrigger>
+                <SelectContent>
+                  {pets.map((pet) => (
+                    <SelectItem key={pet.id} value={pet.id}>
+                      {pet.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {petError && (
+                <p className="text-xs font-medium text-destructive">{petError}</p>
+              )}
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="name" className="text-sm font-medium text-foreground/90">
               Vaccination Name <span className="text-destructive">*</span>
@@ -198,17 +239,17 @@ export default function VaccinationFormDialog({
           </div>
 
           <DialogFooter className="mt-8 gap-3 border-t border-border/50 pt-4 sm:gap-0">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => onOpenChange(false)}
               className="w-full sm:w-auto"
               data-testid="cancel-btn"
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="w-full sm:w-auto"
               data-testid="submit-btn"

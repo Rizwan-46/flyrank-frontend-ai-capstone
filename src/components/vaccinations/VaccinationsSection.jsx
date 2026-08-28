@@ -42,6 +42,7 @@ export default function VaccinationsSection({ petId = null, highlightId = null }
   const [search, setSearch] = useState("");
   const [petFilter, setPetFilter] = useState(ALL_PETS_VALUE);
   const [vetFilter, setVetFilter] = useState(ALL_VETS_VALUE);
+  const [formPetId, setFormPetId] = useState(petId);
 
   const ownPets = useMemo(
     () => allPets.filter((pet) => pet.userId === currentUser?.id),
@@ -76,7 +77,7 @@ export default function VaccinationsSection({ petId = null, highlightId = null }
     if (petFilter !== ALL_PETS_VALUE) {
       filtered = filtered.filter((v) => v.petId === petFilter);
     }
-    
+
     if (vetFilter !== ALL_VETS_VALUE) {
       filtered = filtered.filter((v) => v.veterinarian === vetFilter);
     }
@@ -122,19 +123,21 @@ export default function VaccinationsSection({ petId = null, highlightId = null }
 
   function handleAddClick() {
     setEditingVaccination(null);
+    setFormPetId(petId);
+    setFormOpen(true);
+  }
+  function handleEditClick(vaccination) {
+    setEditingVaccination(vaccination);
+    setFormPetId(vaccination.petId);
     setFormOpen(true);
   }
 
-  function handleEditClick(vaccination) {
-    setEditingVaccination(vaccination);
-    setFormOpen(true);
-  }
 
   function handleFormSubmit(data) {
     if (editingVaccination) {
       updateVaccination(editingVaccination.id, data);
     } else {
-      addVaccination(petId, data);
+      addVaccination(formPetId, data);
     }
   }
 
@@ -162,7 +165,7 @@ export default function VaccinationsSection({ petId = null, highlightId = null }
 
   return (
     <section className="space-y-12" data-testid="vaccinations-section">
-      
+
       {/* Header & Add Button */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -205,7 +208,7 @@ export default function VaccinationsSection({ petId = null, highlightId = null }
               ))}
             </SelectContent>
           </Select>
-          
+
           {uniqueVets.length > 0 && (
             <Select value={vetFilter} onValueChange={setVetFilter}>
               <SelectTrigger className="w-full sm:w-48 bg-card shadow-sm" aria-label="Filter by veterinarian" data-testid="vet-filter">
@@ -297,6 +300,10 @@ export default function VaccinationsSection({ petId = null, highlightId = null }
         open={formOpen}
         onOpenChange={setFormOpen}
         vaccination={editingVaccination}
+        pets={ownPets}
+        lockedPetId={petId}
+        selectedPetId={formPetId}
+        onPetChange={setFormPetId}
         onSubmit={handleFormSubmit}
       />
 
