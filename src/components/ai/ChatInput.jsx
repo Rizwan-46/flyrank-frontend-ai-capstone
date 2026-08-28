@@ -8,7 +8,6 @@ export default function ChatInput({ value = "", onChange, onSubmit, onStop, isGe
   function handleKeyDown(e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      // FIX: Just call onSubmit once. Removed the duplicate event dispatcher.
       onSubmit(e);
     }
   }
@@ -17,13 +16,13 @@ export default function ChatInput({ value = "", onChange, onSubmit, onStop, isGe
   const canSend = safeValue.trim().length > 0 && !isGenerating;
 
   return (
-    <form 
-      onSubmit={onSubmit} 
+    <form
+      onSubmit={onSubmit}
       className="relative flex w-full items-end gap-2 rounded-3xl border border-border bg-card p-2 shadow-sm focus-within:ring-1 focus-within:ring-ring transition-shadow"
     >
       <Textarea
         value={safeValue}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Help from AI..."
         rows={1}
@@ -32,21 +31,21 @@ export default function ChatInput({ value = "", onChange, onSubmit, onStop, isGe
       />
       <div className="mb-0.5 pr-0.5">
         {isGenerating ? (
-          <Button 
-            type="button" 
-            variant="secondary" 
+          <Button
+            type="button"
+            variant="secondary"
             size="icon"
-            onClick={onStop} 
+            onClick={onStop}
             className="h-9 w-9 rounded-full bg-muted hover:bg-muted/80 text-foreground"
           >
             <Square className="h-4 w-4 fill-current" />
             <span className="sr-only">Stop generating</span>
           </Button>
         ) : (
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             size="icon"
-            disabled={!canSend} 
+            disabled={!canSend}
             className="h-9 w-9 rounded-full bg-primary text-primary-foreground transition-transform active:scale-95 disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
