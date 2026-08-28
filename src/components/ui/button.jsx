@@ -45,6 +45,7 @@ function Button({
   variant = "default",
   size = "default",
   render,
+  nativeButton = true,
   ...props
 }) {
   return (
@@ -52,8 +53,9 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       render={render}
+      nativeButton={nativeButton}
       {...props} />
   );
 }
 
-export { Button, buttonVariants } 
+export { Button, buttonVariants }

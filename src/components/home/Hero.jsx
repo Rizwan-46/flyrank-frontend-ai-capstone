@@ -43,6 +43,7 @@ export default function Hero() {
               <Button
                 size="lg"
                 data-testid="hero-dashboard-btn"
+                nativeButton={false}
                 render={<Link href="/dashboard" />}
               >
                 Go to Dashboard
@@ -52,6 +53,7 @@ export default function Hero() {
                 <Button
                   size="lg"
                   data-testid="hero-signup-btn"
+                  nativeButton={false}
                   render={<Link href="/signup" />}
                 >
                   Get Started Free
@@ -60,6 +62,7 @@ export default function Hero() {
                   size="lg"
                   variant="outline"
                   data-testid="hero-login-btn"
+                  nativeButton={false}
                   render={<Link href="/login" />}
                 >
                   Log In
