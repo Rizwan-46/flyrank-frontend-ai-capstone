@@ -13,6 +13,7 @@ import {
   Syringe,
   CalendarCheck,
   FileText,
+  Sparkles,
   Menu,
   LogOut
 } from "lucide-react";
@@ -23,6 +24,7 @@ import {
   { name: "Vaccinations", href: "/dashboard/vaccinations", icon: Syringe },
   { name: "Appointments", href: "/dashboard/appointments", icon: CalendarCheck },
   { name: "Records", href: "/dashboard/medical-records", icon: FileText },
+  { name: "AI Assistant", href: "/dashboard/ai-assistant", icon: Sparkles },
 ];
 export default function DashboardNav() {
   const pathname = usePathname();
