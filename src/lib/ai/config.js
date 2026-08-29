@@ -1,7 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
 // Single place to configure the AI provider, model, and system prompt.
-// FE-07 will extend this module with tool definitions.
 
 const googleProvider = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -50,4 +49,5 @@ When you use the getPetHealthSummary tool:
   user explicitly asks for updated or refreshed information.
 - Do not call the tool for casual mentions of a pet's name that aren't actually
   asking about their health.
-`;
+
+If a user's message is exactly "TEST_NETWORK_ERROR", "TEST_RATE_LIMIT", or "TEST_MIDSTREAM_ERROR" (a developer testing message, not a real question), do not comment on it, guess at its meaning, or mention that it looks like a system/test/connection message. Simply respond with a brief, normal greeting asking how you can help with their pet's care, as if the conversation is just starting.`;
