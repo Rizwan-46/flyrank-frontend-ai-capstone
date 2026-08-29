@@ -50,29 +50,6 @@ export default function ChatInterface() {
   const bottomRef = useRef(null);
   const restoredForUserRef = useRef(null);
 
-  const [viewportHeight, setViewportHeight] = useState(null);
-
-  // iOS Safari's dvh doesn't reliably shrink when the on-screen keyboard
-  // opens. window.visualViewport does report the correct keyboard-adjusted
-  // height, so we use it to actively resize the chat container — keeping
-  // the input visible above the keyboard instead of hidden behind it.
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.visualViewport) return;
-
-    function updateHeight() {
-      setViewportHeight(window.visualViewport.height);
-    }
-
-    updateHeight();
-    window.visualViewport.addEventListener("resize", updateHeight);
-    window.visualViewport.addEventListener("scroll", updateHeight);
-
-    return () => {
-      window.visualViewport.removeEventListener("resize", updateHeight);
-      window.visualViewport.removeEventListener("scroll", updateHeight);
-    };
-  }, []);
-
   const isGenerating = status === "submitted" || status === "streaming";
   const showThinking = status === "submitted";
 
@@ -148,8 +125,6 @@ export default function ChatInterface() {
       if (typeof regenerate === "function") {
         await regenerate();
       } else {
-        // Fallback if this SDK version doesn't expose regenerate(): just
-        // resend the last user message instead of failing silently.
         const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
         const lastUserText = lastUserMessage?.parts?.find((p) => p.type === "text")?.text;
         if (lastUserText) {
@@ -164,14 +139,7 @@ export default function ChatInterface() {
   }
 
   return (
-    <div
-      className="relative flex min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border bg-card"
-      style={{
-        height: viewportHeight
-          ? `${Math.max(viewportHeight - 144, 420)}px`
-          : "calc(100dvh - 9rem)",
-      }}
-    >
+    <div className="relative flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
