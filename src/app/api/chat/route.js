@@ -12,21 +12,8 @@ import { createPetTools } from "@/lib/ai/tools/petTools";
 export const maxDuration = 30;
 
 const isDev = process.env.NODE_ENV !== "production";
+const SENTINEL_TEXTS = ["TEST_NETWORK_ERROR", "TEST_RATE_LIMIT", "TEST_MIDSTREAM_ERROR"];
 
-// Dev-only, in-memory, lives for the life of the dev server process.
-// Lets each sentinel fail exactly once, then succeed on the next
-// attempt — so retry can actually be demonstrated recovering.
-const sentinelAttempts = new Map();
-
-function shouldFailSentinel(key) {
-  const alreadyFailedOnce = sentinelAttempts.get(key);
-  if (!alreadyFailedOnce) {
-    sentinelAttempts.set(key, true);
-    return true;
-  }
-  sentinelAttempts.delete(key);
-  return false;
-}
 
 function buildPetDirectory(pets) {
   if (!pets || pets.length === 0) {
@@ -41,9 +28,8 @@ function buildPetDirectory(pets) {
   )}`;
 }
 
-function getLastUserText(uiMessages) {
-  const lastUser = [...uiMessages].reverse().find((m) => m.role === "user");
-  return lastUser?.parts?.find((p) => p.type === "text")?.text?.trim() ?? "";
+function getLastUserMessage(uiMessages) {
+  return [...uiMessages].reverse().find((m) => m.role === "user");
 }
 
 export async function POST(req) {
@@ -52,47 +38,65 @@ export async function POST(req) {
     const uiMessages = body?.messages || [];
     const dataSnapshot = body?.petContext || {};
 
-    if (isDev) {
-      const lastText = getLastUserText(uiMessages).toUpperCase();
+   if (isDev) {
+  const lastUserMessage = getLastUserMessage(uiMessages);
 
-      if (lastText === "TEST_NETWORK_ERROR" && shouldFailSentinel("network")) {
-        throw new Error("Simulated network failure before streaming began.");
-      }
-      if (lastText === "TEST_RATE_LIMIT" && shouldFailSentinel("rate_limit")) {
-        const err = new Error("Rate limit exceeded (429): too many requests.");
-        err.statusCode = 429;
-        throw err;
-      }
+  const lastText = (
+    lastUserMessage?.parts?.find((p) => p.type === "text")?.text ?? ""
+  )
+    .trim()
+    .toUpperCase();
 
-      // Simulates a connection drop partway through a response: streams
-      // some real text, then deliberately fails before finishing. Tests
-      // that partial content stays visible and Retry recovers cleanly.
-      if (lastText === "TEST_MIDSTREAM_ERROR" && shouldFailSentinel("midstream")) {
-        const textId = generateId();
-        const midStreamFailure = createUIMessageStream({
-          execute: async ({ writer }) => {
-            writer.write({ type: "text-start", id: textId });
-            writer.write({
-              type: "text-delta",
-              id: textId,
-              delta: "Let me look into that for you",
-            });
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            writer.write({
-              type: "text-delta",
-              id: textId,
-              delta: "... checking the records now",
-            });
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            throw new Error("Simulated mid-stream connection drop.");
-          },
-          onError: () =>
-            "The connection was interrupted partway through the response. Please try again.",
+  if (lastText === "TEST_NETWORK_ERROR") {
+    throw new Error("Simulated network failure before streaming began.");
+  }
+
+  if (lastText === "TEST_RATE_LIMIT") {
+    const err = new Error(
+      "Rate limit exceeded (429): too many requests."
+    );
+    err.statusCode = 429;
+    throw err;
+  }
+
+  if (lastText === "TEST_MIDSTREAM_ERROR") {
+    const textId = generateId();
+
+    const midStreamFailure = createUIMessageStream({
+      execute: async ({ writer }) => {
+        writer.write({
+          type: "text-start",
+          id: textId,
         });
 
-        return createUIMessageStreamResponse({ stream: midStreamFailure });
-      }
-    }
+        writer.write({
+          type: "text-delta",
+          id: textId,
+          delta: "Let me look into that for you",
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        writer.write({
+          type: "text-delta",
+          id: textId,
+          delta: "... checking the records now",
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        throw new Error("Simulated mid-stream connection drop.");
+      },
+
+      onError: () =>
+        "The connection was interrupted partway through the response. Please try again.",
+    });
+
+    return createUIMessageStreamResponse({
+      stream: midStreamFailure,
+    });
+  }
+}
 
     const tools = createPetTools(dataSnapshot);
     const petDirectory = buildPetDirectory(dataSnapshot.pets);

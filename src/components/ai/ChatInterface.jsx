@@ -188,6 +188,7 @@ export default function ChatInterface() {
           onSubmit={handleFormSubmit}
           onStop={stop}
           isGenerating={isGenerating}
+          error={error}
         />
       </div>
     </div>

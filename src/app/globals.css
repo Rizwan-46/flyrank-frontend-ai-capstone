@@ -128,3 +128,26 @@
     @apply font-sans;
   }
 }
+@keyframes shake-x {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-shake-once {
+    animation: shake-x 400ms ease-in-out 1;
+  }
+}
+@keyframes pop-once {
+  0% { transform: scale(0.85); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-pop-once {
+    animation: pop-once 250ms cubic-bezier(0.34, 1.56, 0.64, 1) 1;
+  }
+}
