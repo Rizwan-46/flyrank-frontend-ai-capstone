@@ -49,6 +49,7 @@ export default function ChatInterface() {
   const scrollRef = useRef(null);
   const bottomRef = useRef(null);
   const restoredForUserRef = useRef(null);
+  const isSendingRef = useRef(false);
 
   const isGenerating = status === "submitted" || status === "streaming";
   const showThinking = status === "submitted";
@@ -71,6 +72,12 @@ export default function ChatInterface() {
     if (restoredForUserRef.current !== currentUser.id) return;
     setStoredMessages(currentUser.id, messages);
   }, [messages, chatHasHydrated, currentUser, setStoredMessages]);
+
+  useEffect(() => {
+    if (status === "ready" || status === "error") {
+      isSendingRef.current = false;
+    }
+  }, [status]);
 
   function scrollToBottom(behavior = "smooth") {
     bottomRef.current?.scrollIntoView({ behavior, block: "end" });
@@ -98,7 +105,8 @@ export default function ChatInterface() {
 
   function handleSend(text) {
     const trimmed = text.trim();
-    if (!trimmed || isGenerating) return;
+    if (!trimmed || isGenerating || isSendingRef.current) return;
+    isSendingRef.current = true;
 
     const petContext = buildPetContext({
       currentUser,
@@ -139,7 +147,7 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="relative flex h-[calc(100dvh-9rem)] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border bg-card">
+    <div className="relative flex h-[calc(90dvh-9rem)] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <div
         ref={scrollRef}
         onScroll={handleScroll}

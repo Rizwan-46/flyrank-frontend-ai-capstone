@@ -6,6 +6,9 @@ import { ToolInputStreaming, ToolInputAvailable, ToolOutputError } from "./ToolC
 export default function ChatMessage({ message, petsById = {}, onRetry }) {
   const isUser = message.role === "user";
   const parts = message.parts || [];
+  const hasRenderableContent = parts.some(
+    (p) => p.type === "text" || p.type?.startsWith("tool-")
+  );
 
   return (
     <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
@@ -60,6 +63,12 @@ export default function ChatMessage({ message, petsById = {}, onRetry }) {
 
           return null;
         })}
+
+        {!isUser && !hasRenderableContent && (
+          <div className="rounded-2xl bg-secondary px-4 py-2.5 text-sm text-muted-foreground">
+            No response was generated. Please try asking again.
+          </div>
+        )}
       </div>
     </div>
   );

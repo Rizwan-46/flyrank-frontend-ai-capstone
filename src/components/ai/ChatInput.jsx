@@ -51,7 +51,7 @@ export default function ChatInput({
   function handleKeyDown(e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSubmit(e);
+      e.currentTarget.form?.requestSubmit();
     }
   }
 

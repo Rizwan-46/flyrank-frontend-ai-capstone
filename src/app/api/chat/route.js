@@ -123,7 +123,7 @@ export async function POST(req) {
       system: `${SYSTEM_PROMPT}\n\n${petDirectory}`,
       messages: await convertToModelMessages(uiMessages),
       tools,
-      stopWhen: stepCountIs(4),
+      stopWhen: stepCountIs(6),
       abortSignal: req.signal,
     });
 
