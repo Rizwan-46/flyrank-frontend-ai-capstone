@@ -8,27 +8,16 @@ import {
 } from "ai";
 import { chatModel, SYSTEM_PROMPT } from "@/lib/ai/config";
 import { createPetTools } from "@/lib/ai/tools/petTools";
+import { isRateLimited, getClientIp, MAX_MESSAGE_LENGTH } from "@/lib/ai/rateLimit";
 
-export const maxDuration = 30;
+// Netlify's real serverless function timeout is 10s on the free plan
+// (26s max on paid) — this must stay at or under that, or long
+// responses will 502 in production regardless of what this value says.
+export const maxDuration = 10;
 
-// Controls the dev-only sabotage sentinels (TEST_NETWORK_ERROR, etc.).
-// Deliberately NOT tied to NODE_ENV — hosting platforms like Netlify
-// always set NODE_ENV=production on deploy, which would silently
-// disable this everywhere except local dev. Defaults to enabled so
-// these remain demoable on the live URL; set ENABLE_AI_TEST_SENTINELS=false
-// in your host's environment variables to turn them off if ever needed.
 const isDev = process.env.ENABLE_AI_TEST_SENTINELS !== "false";
-
 const SENTINEL_TEXTS = ["TEST_NETWORK_ERROR", "TEST_RATE_LIMIT", "TEST_MIDSTREAM_ERROR"];
 
-// In-memory, per-server-instance. Keyed by the actual message id (not
-// just its text), so a FRESH send of a sentinel phrase always fails,
-// and clicking "Try Again" — which resends that same message — always
-// succeeds. Typing the same phrase again as a brand-new message always
-// fails again too, since it gets a new id.
-// Note: on serverless hosts (e.g. Netlify functions), a cold instance
-// handling the retry could reset this — if retries behave inconsistently
-// in production, this tracking may need to move client-side instead.
 const failedSentinelMessageIds = new Set();
 
 function buildPetDirectory(pets) {
@@ -50,17 +39,35 @@ function getLastUserMessage(uiMessages) {
 
 export async function POST(req) {
   try {
+    // Real production abuse protection — checked before anything else,
+    // so an abuser never even reaches the model call.
+    const clientIp = getClientIp(req);
+    if (isRateLimited(clientIp)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const body = await req.json();
     const uiMessages = body?.messages || [];
     const dataSnapshot = body?.petContext || {};
 
+    const lastUserMessage = getLastUserMessage(uiMessages);
+    const lastUserText =
+      lastUserMessage?.parts?.find((p) => p.type === "text")?.text ?? "";
+
+    if (lastUserText.length > MAX_MESSAGE_LENGTH) {
+      return new Response(
+        JSON.stringify({
+          error: `Messages are limited to ${MAX_MESSAGE_LENGTH} characters.`,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     if (isDev) {
-      const lastUserMessage = getLastUserMessage(uiMessages);
-      const lastText = (
-        lastUserMessage?.parts?.find((p) => p.type === "text")?.text ?? ""
-      )
-        .trim()
-        .toUpperCase();
+      const lastText = lastUserText.trim().toUpperCase();
 
       if (SENTINEL_TEXTS.includes(lastText) && lastUserMessage?.id) {
         const isRetryOfPreviousFailure = failedSentinelMessageIds.has(
@@ -68,11 +75,8 @@ export async function POST(req) {
         );
 
         if (isRetryOfPreviousFailure) {
-          // This exact message already failed once — this is the retry.
-          // Clear it and fall through to the normal path so it succeeds.
           failedSentinelMessageIds.delete(lastUserMessage.id);
         } else {
-          // First time seeing this specific message — fail it.
           failedSentinelMessageIds.add(lastUserMessage.id);
 
           if (lastText === "TEST_NETWORK_ERROR") {

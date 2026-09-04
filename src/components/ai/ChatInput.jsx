@@ -65,10 +65,11 @@ export default function ChatInput({
     >
       <Textarea
         value={safeValue}
-        onChange={handleChange}
+        onChange={(e) => onChange(e.target.value.slice(0, 2000))}
         onKeyDown={handleKeyDown}
         placeholder="Help from AI..."
         rows={1}
+        maxLength={2000}
         className="max-h-32 min-h-[44px] flex-1 resize-none border-0 bg-transparent px-4 py-3 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
         aria-label="Message"
       />
