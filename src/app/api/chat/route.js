@@ -13,7 +13,7 @@ import { isRateLimited, getClientIp, MAX_MESSAGE_LENGTH } from "@/lib/ai/rateLim
 // Netlify's real serverless function timeout is 10s on the free plan
 // (26s max on paid) — this must stay at or under that, or long
 // responses will 502 in production regardless of what this value says.
-export const maxDuration = 10;
+export const maxDuration = 26;
 
 const isDev = process.env.ENABLE_AI_TEST_SENTINELS !== "false";
 const SENTINEL_TEXTS = ["TEST_NETWORK_ERROR", "TEST_RATE_LIMIT", "TEST_MIDSTREAM_ERROR"];
@@ -53,9 +53,11 @@ export async function POST(req) {
     const uiMessages = body?.messages || [];
     const dataSnapshot = body?.petContext || {};
 
-    const lastUserMessage = getLastUserMessage(uiMessages);
+const lastUserMessage = getLastUserMessage(uiMessages);
     const lastUserText =
-      lastUserMessage?.parts?.find((p) => p.type === "text")?.text ?? "";
+      typeof lastUserMessage?.content === "string"
+        ? lastUserMessage.content
+        : lastUserMessage?.parts?.find((p) => p.type === "text")?.text ?? "";
 
     if (lastUserText.length > MAX_MESSAGE_LENGTH) {
       return new Response(
