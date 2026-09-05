@@ -155,11 +155,14 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col">
-    <div
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm animate-in fade-in zoom-in-[0.99] duration-500">
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-60" />
+
+      <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-2 py-6 sm:px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="relative z-10 flex-1 overflow-y-auto px-2 py-6 sm:px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {messages.length === 0 ? (
           <ChatEmptyState onExampleClick={handleSend} />
@@ -190,18 +193,17 @@ export default function ChatInterface() {
                 disabled={isRetrying || isGenerating}
               />
             )}
-            <div ref={bottomRef} />
+            <div ref={bottomRef} className="h-4" />
           </div>
         )}
       </div>
 
       {showJumpToLatest && <JumpToLatest onClick={() => scrollToBottom("smooth")} />}
 
-      {/* Soft fade so message content doesn't feel like it hard-cuts
-          against the input bar — same visual trick ChatGPT/Claude use. */}
-      <div className="pointer-events-none h-6 shrink-0 bg-gradient-to-t from-background to-transparent" />
+      {/* Enhanced smooth fade overlay for text flowing behind the input */}
+      <div className="pointer-events-none absolute bottom-[68px] z-20 h-16 w-full bg-gradient-to-t from-card via-card/80 to-transparent sm:bottom-[76px]" />
 
-      <div className="mx-auto w-full max-w-3xl shrink-0 px-2 pb-4 sm:px-4">
+      <div className="relative z-30 mx-auto w-full max-w-3xl shrink-0 bg-card px-2 pb-2 pt-1 sm:px-4">
         <ChatInput
           value={input}
           onChange={setInput}
