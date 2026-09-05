@@ -10,9 +10,12 @@ import { chatModel, SYSTEM_PROMPT } from "@/lib/ai/config";
 import { createPetTools } from "@/lib/ai/tools/petTools";
 import { isRateLimited, getClientIp, MAX_MESSAGE_LENGTH } from "@/lib/ai/rateLimit";
 
-// Netlify's real serverless function timeout is 10s on the free plan
-// (26s max on paid) — this must stay at or under that, or long
-// responses will 502 in production regardless of what this value says.
+// NOTE: Netlify's free-plan serverless function timeout is a hard 10s,
+// regardless of this value (26s max even on paid). This is currently
+// set to 30 — on the free plan, Netlify will still cut the connection
+// at 10s no matter what this says. Left as-is since it was changed
+// deliberately; flagging so it's a known, documented choice rather than
+// a silent inconsistency.
 export const maxDuration = 30;
 
 const isDev = process.env.ENABLE_AI_TEST_SENTINELS !== "false";
@@ -37,6 +40,13 @@ function getLastUserMessage(uiMessages) {
   return [...uiMessages].reverse().find((m) => m.role === "user");
 }
 
+function isQuotaExhaustedError(error) {
+  return /quota|resource_exhausted/i.test(error?.message || "");
+}
+
+const QUOTA_EXHAUSTED_MESSAGE =
+  "This demo's free daily AI quota has been used up. Please try again tomorrow, or the site owner can add a paid key.";
+
 export async function POST(req) {
   try {
     // Real production abuse protection — checked before anything else,
@@ -53,11 +63,16 @@ export async function POST(req) {
     const uiMessages = body?.messages || [];
     const dataSnapshot = body?.petContext || {};
 
-const lastUserMessage = getLastUserMessage(uiMessages);
-    const lastUserText =
-      typeof lastUserMessage?.content === "string"
-        ? lastUserMessage.content
-        : lastUserMessage?.parts?.find((p) => p.type === "text")?.text ?? "";
+    const lastUserMessage = getLastUserMessage(uiMessages);
+
+    // parts is the real AI SDK v5 shape this app uses; content is kept
+    // only as a harmless fallback in case that ever changes.
+    let lastUserText = "";
+    if (Array.isArray(lastUserMessage?.parts)) {
+      lastUserText = lastUserMessage.parts.find((p) => p.type === "text")?.text ?? "";
+    } else if (typeof lastUserMessage?.content === "string") {
+      lastUserText = lastUserMessage.content;
+    }
 
     if (lastUserText.length > MAX_MESSAGE_LENGTH) {
       return new Response(
@@ -131,11 +146,17 @@ const lastUserMessage = getLastUserMessage(uiMessages);
       tools,
       stopWhen: stepCountIs(6),
       abortSignal: req.signal,
+      // Quota errors are not transient — retrying them just wastes more
+      // of the already-exhausted daily allowance. Cap retries to 1.
+      maxRetries: 1,
     });
 
     return result.toUIMessageStreamResponse({
       onError: (error) => {
         console.error("Stream error:", error);
+        if (isQuotaExhaustedError(error)) {
+          return QUOTA_EXHAUSTED_MESSAGE;
+        }
         if (error?.statusCode === 429 || /429|rate limit/i.test(error?.message || "")) {
           return "Rate limit exceeded (429): please wait a moment and try again.";
         }
@@ -147,7 +168,9 @@ const lastUserMessage = getLastUserMessage(uiMessages);
     const statusCode = error?.statusCode === 429 ? 429 : 500;
     return new Response(
       JSON.stringify({
-        error: error?.message || "Something went wrong generating a response.",
+        error: isQuotaExhaustedError(error)
+          ? QUOTA_EXHAUSTED_MESSAGE
+          : error?.message || "Something went wrong generating a response.",
       }),
       { status: statusCode, headers: { "Content-Type": "application/json" } }
     );

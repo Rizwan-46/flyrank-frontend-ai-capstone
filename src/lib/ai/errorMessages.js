@@ -5,6 +5,13 @@
 export function categorizeChatError(error) {
   const message = (error?.message || "").toLowerCase();
 
+  if (message.includes("quota") || message.includes("resource_exhausted")) {
+    return {
+      title: "Daily AI quota reached",
+      description: "This demo's free AI usage limit has been reached for now. Please try again later.",
+    };
+  }
+
   if (message.includes("429") || message.includes("rate limit") || message.includes("too many requests")) {
     return {
       title: "Too many requests",
@@ -21,6 +28,6 @@ export function categorizeChatError(error) {
 
   return {
     title: "Something went wrong",
-    description: "Please try again.", // <-- Shortened
+    description: "Please try again.",
   };
 }

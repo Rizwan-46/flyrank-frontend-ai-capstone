@@ -46,6 +46,8 @@ export default function ChatInterface() {
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [stalled, setStalled] = useState(false);
+  const stallTimeoutRef = useRef(null);
   const scrollRef = useRef(null);
   const bottomRef = useRef(null);
   const restoredForUserRef = useRef(null);
@@ -78,6 +80,21 @@ export default function ChatInterface() {
       isSendingRef.current = false;
     }
   }, [status]);
+
+  // If generation goes quiet for too long — no new tokens arriving at
+  // all — treat it as stalled rather than leaving the user staring at a
+  // silent thinking indicator forever. Resets on every real chunk of new
+  // content, so a genuinely long-but-progressing response is never
+  // wrongly flagged.
+  useEffect(() => {
+    clearTimeout(stallTimeoutRef.current);
+    if (!isGenerating) {
+      setStalled(false);
+      return;
+    }
+    stallTimeoutRef.current = setTimeout(() => setStalled(true), 12000);
+    return () => clearTimeout(stallTimeoutRef.current);
+  }, [isGenerating, messages]);
 
   function scrollToBottom(behavior = "smooth") {
     bottomRef.current?.scrollIntoView({ behavior, block: "end" });
