@@ -24,16 +24,18 @@ export default function ProtectedLayout({ children }) {
 
   if (!hasHydrated || !checked) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex h-dvh items-center justify-center bg-background">
         <p className="text-sm text-muted-foreground">Loading dashboard...</p>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <DashboardNav />
-      <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+return (
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
+      <div className="shrink-0">
+        <DashboardNav />
+      </div>
+<main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-y-auto p-4 sm:p-6 lg:p-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {children}
       </main>
     </div>

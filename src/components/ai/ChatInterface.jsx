@@ -56,8 +56,6 @@ export default function ChatInterface() {
   const isGenerating = status === "submitted" || status === "streaming";
   const showThinking = status === "submitted";
 
-  // Restore this user's saved conversation once localStorage has
-  // hydrated. Re-runs if the logged-in user changes mid-session.
   useEffect(() => {
     if (!chatHasHydrated || !currentUser) return;
     if (restoredForUserRef.current === currentUser.id) return;
@@ -67,8 +65,6 @@ export default function ChatInterface() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatHasHydrated, currentUser?.id]);
 
-  // Persist every change so navigating to another dashboard page and
-  // back — or refreshing the browser — doesn't lose the conversation.
   useEffect(() => {
     if (!chatHasHydrated || !currentUser) return;
     if (restoredForUserRef.current !== currentUser.id) return;
@@ -81,11 +77,6 @@ export default function ChatInterface() {
     }
   }, [status]);
 
-  // If generation goes quiet for too long — no new tokens arriving at
-  // all — treat it as stalled rather than leaving the user staring at a
-  // silent thinking indicator forever. Resets on every real chunk of new
-  // content, so a genuinely long-but-progressing response is never
-  // wrongly flagged.
   useEffect(() => {
     clearTimeout(stallTimeoutRef.current);
     if (!isGenerating) {
@@ -164,16 +155,16 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="relative flex h-[calc(90dvh-9rem)] min-h-[420px] flex-col overflow-hidden rounded-2xl border border-border bg-card">
-      <div
+    <div className="relative flex h-full min-h-0 flex-col">
+    <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-6 sm:px-6"
+        className="flex-1 overflow-y-auto px-2 py-6 sm:px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {messages.length === 0 ? (
           <ChatEmptyState onExampleClick={handleSend} />
         ) : (
-          <div className="mx-auto flex max-w-3xl flex-col gap-4">
+          <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
             {messages.map((message, index) => {
               const previousUserText =
                 message.role === "assistant"
@@ -206,7 +197,11 @@ export default function ChatInterface() {
 
       {showJumpToLatest && <JumpToLatest onClick={() => scrollToBottom("smooth")} />}
 
-      <div className="border-t border-border p-3 sm:p-4">
+      {/* Soft fade so message content doesn't feel like it hard-cuts
+          against the input bar — same visual trick ChatGPT/Claude use. */}
+      <div className="pointer-events-none h-6 shrink-0 bg-gradient-to-t from-background to-transparent" />
+
+      <div className="mx-auto w-full max-w-3xl shrink-0 px-2 pb-4 sm:px-4">
         <ChatInput
           value={input}
           onChange={setInput}

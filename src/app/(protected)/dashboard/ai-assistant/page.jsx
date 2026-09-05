@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Sparkles, ShieldAlert, Bot, HelpCircle } from "lucide-react";
+import { Sparkles, ShieldAlert, Bot } from "lucide-react";
 import { usePetStore } from "@/store/petStore";
 import { useAuthStore } from "@/store/authStore";
 import ChatInterface from "@/components/ai/ChatInterface";
@@ -11,15 +11,13 @@ export default function AIAssistantPage() {
   const currentUser = useAuthStore((s) => s.currentUser);
   const pets = usePetStore((s) => s.pets);
 
-  // Compute the user's pet list for quick context awareness
   const userPets = useMemo(() => {
     return pets.filter((p) => p.userId === currentUser?.id);
   }, [pets, currentUser?.id]);
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Top Banner & Header */}
-      <header className="flex flex-col justify-between gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:p-5">
+    <div className="flex h-[calc(100dvh-8rem)] flex-col gap-4">
+      <header className="flex shrink-0 flex-col justify-between gap-4 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:p-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -38,7 +36,6 @@ export default function AIAssistantPage() {
           </p>
         </div>
 
-        {/* Dynamic Context Pill */}
         <div className="flex flex-wrap items-center gap-2">
           {userPets.length > 0 ? (
             <div className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground">
@@ -56,10 +53,9 @@ export default function AIAssistantPage() {
         </div>
       </header>
 
-      {/* Main Chat Interface */}
-      <main className="flex-1">
+      <div className="min-h-0 flex-1">
         <ChatInterface />
-      </main>
+      </div>
     </div>
   );
 }

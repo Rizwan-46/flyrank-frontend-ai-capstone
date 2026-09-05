@@ -9,7 +9,7 @@ const EXAMPLE_PROMPTS = [
 
 export default function ChatEmptyState({ onExampleClick }) {
   return (
-    <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center gap-8 px-4 text-center animate-in fade-in zoom-in-95 duration-500">
+    <div className="mx-auto flex min-h-full max-w-lg flex-col items-center justify-start gap-8 px-4 py-4 text-center animate-in fade-in zoom-in-95 duration-500 sm:justify-center sm:py-0">
       <div className="flex flex-col items-center gap-3">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 shadow-inner">
           <Sparkles className="h-8 w-8 text-primary" aria-hidden="true" />
