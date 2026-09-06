@@ -1,7 +1,10 @@
-import ReactMarkdown from "react-markdown";
 import { Bot, User } from "lucide-react";
+import dynamic from "next/dynamic";
 import PetHealthSummaryCard from "./PetHealthSummaryCard";
 import { ToolInputStreaming, ToolInputAvailable, ToolOutputError } from "./ToolCallStates";
+
+// Add this dynamic import:
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 export default function ChatMessage({ message, petsById = {}, onRetry }) {
   const isUser = message.role === "user";

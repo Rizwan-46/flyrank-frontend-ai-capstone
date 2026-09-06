@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
- allowedDevOrigins: ['192.168.100.34'],
+  allowedDevOrigins: ['192.168.100.34'],
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
 };
 
 export default nextConfig;

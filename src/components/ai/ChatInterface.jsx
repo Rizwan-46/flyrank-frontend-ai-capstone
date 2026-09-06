@@ -10,8 +10,13 @@ import { useMedicalRecordStore } from "@/store/medicalRecordStore";
 import { useAppointmentStore } from "@/store/appointmentStore";
 import { useChatStore } from "@/store/chatStore";
 import { buildPetContext } from "@/lib/ai/buildPetContext";
-import ChatMessage from "./ChatMessage";
+import dynamic from "next/dynamic";
 import ChatInput from "./ChatInput";
+
+// Lazy-load the heavy message component only when messages actually exist
+const ChatMessage = dynamic(() => import("./ChatMessage"), { 
+  ssr: false 
+});
 import ThinkingIndicator from "./ThinkingIndicator";
 import JumpToLatest from "./JumpToLatest";
 import ChatEmptyState from "./ChatEmptyState";
