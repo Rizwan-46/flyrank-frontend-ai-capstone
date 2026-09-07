@@ -1,10 +1,20 @@
+import { lazy, Suspense } from "react";
 import { Bot, User } from "lucide-react";
-import dynamic from "next/dynamic";
 import PetHealthSummaryCard from "./PetHealthSummaryCard";
 import { ToolInputStreaming, ToolInputAvailable, ToolOutputError } from "./ToolCallStates";
 
-// Add this dynamic import:
-const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
+// react-markdown pulls in a genuinely large dependency tree (remark,
+// micromark, unified). Lazy-loading it is a real win: an assistant
+// reply always waits on a network round-trip to the AI model first,
+// so this chunk loads in parallel with that wait.
+//
+// Uses React.lazy + Suspense (not next/dynamic's `loading` option) —
+// dynamic()'s loading component does NOT receive the children/props
+// passed to the real component, so it can't show the actual message
+// text while loading. Suspense's fallback is defined right where we
+// use it, so it can show the real text immediately — no blank bubble,
+// ever, even before the chunk finishes loading.
+const ReactMarkdown = lazy(() => import("react-markdown"));
 
 export default function ChatMessage({ message, petsById = {}, onRetry }) {
   const isUser = message.role === "user";
@@ -39,7 +49,9 @@ export default function ChatMessage({ message, petsById = {}, onRetry }) {
                 }`}
               >
                 <div className="space-y-2 break-words text-sm leading-relaxed [&_a]:underline [&_code]:rounded [&_code]:bg-black/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.85em] [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:m-0 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-black/10 [&_pre]:p-3 [&_ul]:list-disc [&_ul]:pl-5">
-                  <ReactMarkdown>{part.text}</ReactMarkdown>
+                  <Suspense fallback={<span>{part.text}</span>}>
+                    <ReactMarkdown>{part.text}</ReactMarkdown>
+                  </Suspense>
                 </div>
               </div>
             );
