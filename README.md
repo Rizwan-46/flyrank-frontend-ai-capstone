@@ -34,13 +34,13 @@ Or just sign up with any new email — it works the same way.
 <div align="center">
 
 <p><strong>Dashboard Overview</strong></p>
-<img src="./public/screenshots/dashboard.png" alt="Dashboard" width="800" />
+<img src="public/screenshots/dashboard.png" alt="Dashboard" width="800" />
 
 <p><strong>Pet Profile & Medical Records</strong></p>
-<img src="./public/screenshots/pet-details.png" alt="Pet Profile" width="800" />
+<img src="public/screenshots/pet-details.png" alt="Pet Profile" width="800" />
 
 <p><strong>AI Assistant with a Health Summary Card</strong></p>
-<img src="./public/screenshots/ai-assistant.png" alt="AI Assistant" width="800" />
+<img src="public/screenshots/ai-assistant.png" alt="AI Assistant" width="800" />
 
 </div>
 
