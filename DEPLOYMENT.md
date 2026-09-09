@@ -25,7 +25,10 @@
 - [x] 1 end-to-end test covering the primary user flow (Playwright)
 - [x] AI route tested with a mocked model — no test ever calls the real Gemini API
 - [x] CI (GitHub Actions) runs the full suite on every push to `main`; screenshot evidence provided separately under Testing Evidence
-<img src="public/screenshots/ci-tests.png" alt="GitHub Actions CI Test Run" width="800" />
+
+<div align="center">
+  <img src="./public/screenshots/ci-tests.png" alt="GitHub Actions CI Test Run" width="800" />
+</div>
 
 ### Performance & Accessibility
 - [x] Lighthouse run on Dashboard and AI Assistant pages (Mobile, throttled 4G)
