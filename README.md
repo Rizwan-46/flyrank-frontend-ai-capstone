@@ -34,13 +34,16 @@ Or just sign up with any new email — it works the same way.
 <div align="center">
 
 <p><strong>Dashboard Overview</strong></p>
-<img src="./public/screenshots/dashboard.png" alt="Dashboard" width="800" />
+<img src="https://github.com/user-attachments/assets/b8f5763e-e81f-4a6d-a74f-3396fe29bbf6"  alt="Dashboard" width="800" />
+
 
 <p><strong>Pet Profile & Medical Records</strong></p>
-<img src="./public/screenshots/pet-details.png" alt="Pet Profile" width="800" />
+<img src="https://github.com/user-attachments/assets/86c16d9b-dc2e-44ab-bbdd-bcff9098b3d8"  alt="Pet Profile" width="800" />
+
 
 <p><strong>AI Assistant with a Health Summary Card</strong></p>
-<img src="./public/screenshots/ai-assistant.png" alt="AI Assistant" width="800" />
+<img  src="https://github.com/user-attachments/assets/8bb495f3-7cbb-4d65-a88c-ea3f77be5e51"  alt="AI Assistant" width="800"  />
+
 
 </div>
 
