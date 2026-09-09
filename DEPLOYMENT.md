@@ -27,7 +27,8 @@
 - [x] CI (GitHub Actions) runs the full suite on every push to `main`; screenshot evidence provided separately under Testing Evidence
 
 <div align="center">
-  <img src="./public/screenshots/ci-tests.png" alt="GitHub Actions CI Test Run" width="800" />
+  <img src="https://github.com/user-attachments/assets/e79d3118-cf2a-47b1-9d3a-b40884308b13" alt="GitHub Actions CI Test Run" width="800" />
+
 </div>
 
 ### Performance & Accessibility
