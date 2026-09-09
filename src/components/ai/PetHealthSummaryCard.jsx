@@ -45,7 +45,7 @@ export default function PetHealthSummaryCard({ result }) {
             <PawPrint className="h-6 w-6 text-primary" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <h3 className="truncate text-base font-bold text-foreground">{pet.name}</h3>
+         <h2 className="truncate text-base font-bold text-foreground">{pet.name}</h2>
             <p className="truncate text-xs font-medium text-muted-foreground">
               {pet.breed} · {pet.species}
             </p>
